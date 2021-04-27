@@ -1,37 +1,84 @@
 const inquirer = require("inquirer");
 
-const Employee = require("./lib/Employee");
-const Engineer = require("./lib/Engineer");
-const Intern = require("./lib/Intern");
-const Manager = require("./lib/Manager");
+// const Employee = require("./lib/Employee");
+// const Engineer = require("./lib/Engineer");
+// const Intern = require("./lib/Intern");
+// const Manager = require("./lib/Manager");
 
 const fs = require("fs");
 
-function startInquirer() {
+const ROLE = {
+  MANAGER: "Manager",
+  ENGINEER: "Engineer",
+  INTERN: "Intern",
+  NO: "I don't want to add any more team members",
+};
+
+function collectEmployeeData(employeeType = ROLE.MANAGER) {
+  employeeType = employeeType.toLocaleLowerCase();
   const promptArray = [
     {
       type: "input",
       name: "name",
-      message: "What is your name?",
+      message: `What is the ${employeeType}'s name?`,
     },
     {
       type: "input",
       name: "id",
-      message: "What is your ID?",
+      message: `What is the ${employeeType}'s ID?`,
     },
     {
       type: "input",
       name: "email",
-      message: "What is your email?",
+      message: `What is the ${employeeType}'s email?`,
+    },
+    {
+      type: "input",
+      name: "officeNumber",
+      message: `What is the ${employeeType}'s office number?`,
+      when: () => employeeType === ROLE.MANAGER,
+    },
+        {
+      type: 'input',
+      name: 'github',
+      message: `What is the ${employeeType}'s github user?`,
+      when: () => employeeType === ROLE.ENGINEER
+    },
+        {
+      type: 'input',
+      name: 'school',
+      message: `What is the ${employeeType}'s school?`,
+      when: () => employeeType === ROLE.INTERN
     },
     {
       type: "list",
-      name: "role",
-      message: "What is your role?",
-      choices: ["Manager", "Engineer", "Intern"],
+      name: "newRole",
+      message: "Which type of team member would you like to add?",
+      choices: [
+        ROLE.ENGINEER,
+        ROLE.INTERN,
+        ROLE.NO,
+      ],
     },
   ];
+
   return inquirer.prompt(promptArray);
+}
+
+async function collectEmployees(employees = [], employeeType = ROLE.MANAGER) {
+  // destructuring the data from collectEmployeeData
+  // `newRole` says what to do next
+  // the rest of the object (...employeeData) contains the employee data
+  const { newRole, ...employeeData } = await collectEmployeeData(employeeType);
+  employeeData.type = employeeType;
+  // add the employeeData to the final array of employees
+  employees.push(employeeData);
+
+  if (newRole != ROLE.NO) {
+    return collectEmployees(employees, newRole);
+  } else {
+    return employees;
+  }
 }
 
 const generateHTML = (answers) =>
@@ -68,8 +115,11 @@ const generateHTML = (answers) =>
   `;
 
 const init = () => {
-  startInquirer()
-    .then((answers) => writeFileAsync("index.html", generateHTML(answers)))
+  collectEmployees()
+    .then((answers) => { 
+      console.log(answers);
+      writeFileAsync("index.html", generateHTML(answers));
+    })
     .then(() => console.log("Successfully wrote to index.html"))
     .catch((err) => console.error(err));
 };
