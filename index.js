@@ -7,6 +7,10 @@ const inquirer = require("inquirer");
 
 const fs = require("fs");
 
+const util = require('util');
+const writeFileAsync = util.promisify(fs.writeFile);
+
+
 const ROLE = {
   MANAGER: "Manager",
   ENGINEER: "Engineer",
@@ -15,7 +19,6 @@ const ROLE = {
 };
 
 function collectEmployeeData(employeeType = ROLE.MANAGER) {
-  employeeType = employeeType.toLocaleLowerCase();
   const promptArray = [
     {
       type: "input",
@@ -81,6 +84,31 @@ async function collectEmployees(employees = [], employeeType = ROLE.MANAGER) {
   }
 }
 
+function getCardHtml(answers) {
+  let html = "";
+  for (i = 0; i < answers; i++) {
+    console.log(answers[i].name)
+      html += `<div class="col-12 col-sm-6 col-md-4">
+          <div class="card">
+            <div class="card-header bg-dark text-white">
+              <h3 class="display-4">${answers[i].name}</h3>
+              <p class="lead"><i class="fas fa-mug-hot"></i>${answers[i].type}</p>
+            </div>
+            <div class="card-body">
+              <ul class="list-group">
+                <li class="list-group-item">ID: ${answers[i].id}</li>
+                <li class="list-group-item">
+                  Email: <a href="mailto:${answers[i].email}">${answers[i].email}</a>
+                </li>
+                <li class="list-group-item">Office number: ${answers[i].officeNumber}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        `}
+  return html;
+}
+
 const generateHTML = (answers) =>
   `<!DOCTYPE html>
   <html lang="en">
@@ -106,8 +134,7 @@ const generateHTML = (answers) =>
   
       <div class="container bg-white">
         <div class="row d-flex justify-content-center">
-          
-
+        ${getCardHtml()}
         </div>
       </div>
     </body>
@@ -118,7 +145,7 @@ const init = () => {
   collectEmployees()
     .then((answers) => { 
       console.log(answers);
-      writeFileAsync("index.html", generateHTML(answers));
+      writeFileAsync('./dist/index.html', generateHTML(answers));
     })
     .then(() => console.log("Successfully wrote to index.html"))
     .catch((err) => console.error(err));
