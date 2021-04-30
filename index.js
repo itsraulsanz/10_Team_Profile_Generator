@@ -1,9 +1,9 @@
 const inquirer = require("inquirer");
 
-// const Employee = require("./lib/Employee");
-// const Engineer = require("./lib/Engineer");
-// const Intern = require("./lib/Intern");
-// const Manager = require("./lib/Manager");
+const Employee = require("./lib/Employee");
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
+const Manager = require("./lib/Manager");
 
 const fs = require("fs");
 
@@ -68,9 +68,19 @@ async function collectEmployees(employees = [], employeeType = ROLE.MANAGER) {
   // `newRole` says what to do next
   // the rest of the object (...employeeData) contains the employee data
   const { newRole, ...employeeData } = await collectEmployeeData(employeeType);
-  employeeData.type = employeeType;
-  // add the employeeData to the final array of employees
-  employees.push(employeeData);
+  const { name, id, email, officeNumber, github, school } = employeeData;
+  
+  switch (employeeType) {
+    case 'Manager':
+      employees.push(new Manager(name, id, email, officeNumber));
+      break;
+    case 'Engineer':
+      employees.push(new Engineer(name, id, email, github));
+      break;
+    case 'Intern':
+      employees.push(new Intern(name, id, email, school));
+      break;        
+  }
 
   if (newRole != ROLE.NO) {
     return collectEmployees(employees, newRole);
@@ -87,18 +97,18 @@ function getCardsHtml(employees) {
       `<div class="col-12 col-sm-6 col-md-4">
     <div class="card">
       <div class="card-header bg-dark text-white">
-        <h3 class="display-4">${employee.name}</h3>
-        <p class="lead"><i class="fas fa-mug-hot"></i>${employee.type}</p>
+        <h3 class="display-4">${employee.getName()}</h3>
+        <p class="lead"><i class="fas fa-mug-hot"></i> ${employee.getRole()}</p>
       </div>
       <div class="card-body">
         <ul class="list-group">
-          <li class="list-group-item">ID: ${employee.id}</li>
+          <li class="list-group-item">ID: ${employee.getId()}</li>
           <li class="list-group-item">
-            Email: <a href="mailto:${employee.email}">${employee.email}</a>
-          </li>
-          ${employee.officeNumber ? `<li class="list-group-item">Office number: ${employee.officeNumber}</li>` : ''}
-          ${employee.github ? `<li class="list-group-item">Github: <a href="https://github.com/${employee.github}/">${employee.github}</li>` : ''}
-          ${employee.school ? `<li class="list-group-item">School: ${employee.school}</li>`: ''}    
+            Email: <a href="mailto:${employee.getEmail()}">${employee.getEmail()}</a>
+          </li>          
+          ${employee.getRole() === 'Manager' ? `<li class="list-group-item">Office number: ${employee.getOfficeNumber()}</li>` : ''}
+          ${employee.getRole() === 'Engineer' ? `<li class="list-group-item">Github: <a href="https://github.com/${employee.getGithub()}/">${employee.getGithub()}</a></li>` : ''}
+          ${employee.getRole() === 'Intern'? `<li class="list-group-item">School: ${employee.getSchool()}</li>`: ''}    
         </ul>
       </div>
     </div>
