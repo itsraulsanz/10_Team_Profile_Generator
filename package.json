@@ -1,13 +1,13 @@
 {
   "name": "10_Team_Profile_Generator",
   "version": "1.0.0",
-  "description": "## Your Task",
+  "description": "Team Profile Generator",
   "main": "index.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
