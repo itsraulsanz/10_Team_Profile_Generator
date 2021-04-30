@@ -7,9 +7,8 @@ const inquirer = require("inquirer");
 
 const fs = require("fs");
 
-const util = require('util');
+const util = require("util");
 const writeFileAsync = util.promisify(fs.writeFile);
-
 
 const ROLE = {
   MANAGER: "Manager",
@@ -41,27 +40,23 @@ function collectEmployeeData(employeeType = ROLE.MANAGER) {
       message: `What is the ${employeeType}'s office number?`,
       when: () => employeeType === ROLE.MANAGER,
     },
-        {
-      type: 'input',
-      name: 'github',
+    {
+      type: "input",
+      name: "github",
       message: `What is the ${employeeType}'s github user?`,
-      when: () => employeeType === ROLE.ENGINEER
+      when: () => employeeType === ROLE.ENGINEER,
     },
-        {
-      type: 'input',
-      name: 'school',
+    {
+      type: "input",
+      name: "school",
       message: `What is the ${employeeType}'s school?`,
-      when: () => employeeType === ROLE.INTERN
+      when: () => employeeType === ROLE.INTERN,
     },
     {
       type: "list",
       name: "newRole",
       message: "Which type of team member would you like to add?",
-      choices: [
-        ROLE.ENGINEER,
-        ROLE.INTERN,
-        ROLE.NO,
-      ],
+      choices: [ROLE.ENGINEER, ROLE.INTERN, ROLE.NO],
     },
   ];
 
@@ -85,10 +80,9 @@ async function collectEmployees(employees = [], employeeType = ROLE.MANAGER) {
 }
 
 function getCardHtml(answers) {
-  let html = "";
-  for (i = 0; i < answers; i++) {
-    console.log(answers[i].name)
-      html += `<div class="col-12 col-sm-6 col-md-4">
+  const html = [];
+  for (let i = 0; i < answers.length; i++) {
+    return `<div class="col-12 col-sm-6 col-md-4">
           <div class="card">
             <div class="card-header bg-dark text-white">
               <h3 class="display-4">${answers[i].name}</h3>
@@ -105,47 +99,47 @@ function getCardHtml(answers) {
             </div>
           </div>
         </div>
-        `}
-  return html;
+        `;
+  }
 }
 
-const generateHTML = (answers) =>
+const generateHTML = () =>
   `<!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-      <link
-        rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      />
-      <script
-        src="https://kit.fontawesome.com/a9d6910f06.js"
-        crossorigin="anonymous"
-      ></script>
-      <title>My team</title>
-    </head>
-    <body>
-      <header
-        class="jumbotron jumbotron-fluid bg-danger text-white d-flex justify-content-center"
-      >
-        <h1>My team</h1>
-      </header>
-  
-      <div class="container bg-white">
-        <div class="row d-flex justify-content-center">
-        ${getCardHtml()}
-        </div>
-      </div>
-    </body>
-  </html>
-  `;
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+            <link
+              rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            />
+            <script
+              src="https://kit.fontawesome.com/a9d6910f06.js"
+              crossorigin="anonymous"
+            ></script>
+            <title>My team</title>
+          </head>
+          <body>
+            <header
+              class="jumbotron jumbotron-fluid bg-danger text-white d-flex justify-content-center"
+            >
+              <h1>My team</h1>
+            </header>
+        
+            <div class="container bg-white">
+              <div class="row d-flex justify-content-center">
+              ${getCardHtml()}
+              </div>
+            </div>
+          </body>
+        </html>
+        `;
 
 const init = () => {
   collectEmployees()
-    .then((answers) => { 
+    .then((answers) => {
       console.log(answers);
-      writeFileAsync('./dist/index.html', generateHTML(answers));
+      writeFileAsync("./dist/index.html", generateHTML());
     })
     .then(() => console.log("Successfully wrote to index.html"))
     .catch((err) => console.error(err));
