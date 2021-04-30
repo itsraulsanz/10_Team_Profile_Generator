@@ -79,31 +79,35 @@ async function collectEmployees(employees = [], employeeType = ROLE.MANAGER) {
   }
 }
 
-function getCardHtml(answers) {
+function getCardsHtml(employees) {
   const html = [];
-  for (let i = 0; i < answers.length; i++) {
-    return `<div class="col-12 col-sm-6 col-md-4">
-          <div class="card">
-            <div class="card-header bg-dark text-white">
-              <h3 class="display-4">${answers[i].name}</h3>
-              <p class="lead"><i class="fas fa-mug-hot"></i>${answers[i].type}</p>
-            </div>
-            <div class="card-body">
-              <ul class="list-group">
-                <li class="list-group-item">ID: ${answers[i].id}</li>
-                <li class="list-group-item">
-                  Email: <a href="mailto:${answers[i].email}">${answers[i].email}</a>
-                </li>
-                <li class="list-group-item">Office number: ${answers[i].officeNumber}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        `;
-  }
+  employees.forEach(
+    (employee) =>
+    html.push(
+      `<div class="col-12 col-sm-6 col-md-4">
+    <div class="card">
+      <div class="card-header bg-dark text-white">
+        <h3 class="display-4">${employee.name}</h3>
+        <p class="lead"><i class="fas fa-mug-hot"></i>${employee.type}</p>
+      </div>
+      <div class="card-body">
+        <ul class="list-group">
+          <li class="list-group-item">ID: ${employee.id}</li>
+          <li class="list-group-item">
+            Email: <a href="mailto:${employee.email}">${employee.email}</a>
+          </li>
+          ${employee.officeNumber ? `<li class="list-group-item">Office number: ${employee.officeNumber}</li>` : ''}
+          ${employee.github ? `<li class="list-group-item">Github: <a href="https://github.com/${employee.github}/">${employee.github}</li>` : ''}
+          ${employee.school ? `<li class="list-group-item">School: ${employee.school}</li>`: ''}    
+        </ul>
+      </div>
+    </div>
+  </div>`)
+  );
+  return html.join('');
 }
 
-const generateHTML = () =>
+const generateHTML = (employees) =>
   `<!DOCTYPE html>
         <html lang="en">
           <head>
@@ -128,7 +132,7 @@ const generateHTML = () =>
         
             <div class="container bg-white">
               <div class="row d-flex justify-content-center">
-              ${getCardHtml()}
+              ${getCardsHtml(employees)}
               </div>
             </div>
           </body>
@@ -137,9 +141,8 @@ const generateHTML = () =>
 
 const init = () => {
   collectEmployees()
-    .then((answers) => {
-      console.log(answers);
-      writeFileAsync("./dist/index.html", generateHTML());
+    .then((employees) => {
+      writeFileAsync("./dist/index.html", generateHTML(employees));
     })
     .then(() => console.log("Successfully wrote to index.html"))
     .catch((err) => console.error(err));
