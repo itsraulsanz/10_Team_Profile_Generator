@@ -36,3 +36,6 @@ THEN I exit the application, and the HTML is generated
 The following image shows a mock-up of the generated HTML’s appearance and functionality:
 
 ![HTML webpage titled “My Team” features three boxes listing employee names, titles, and other key info.](./img/mockup.png)
+
+## HTML generated using the application
+(https://itsraulsanz.github.io/Team-Profile-Generator/dist/index.html)
